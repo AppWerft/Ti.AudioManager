@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.view.KeyEvent;
 
 @Kroll.module(name = "Audiofocus", id = "de.appwerft.audiomanager")
 public class AudiomanagerModule extends KrollModule {
@@ -52,7 +53,9 @@ public class AudiomanagerModule extends KrollModule {
 
 	private AudioManager am;
 	private BroadcastReceiver receiver;
+	private RemoteControlReceiver keylistener;
 	private KrollFunction onActionCallback;
+	private KrollFunction onKeyCallback;
 	private IntentFilter intentFilter;
 	private Context context;
 
@@ -61,6 +64,7 @@ public class AudiomanagerModule extends KrollModule {
 		context = TiApplication.getInstance().getApplicationContext();
 		am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 		receiver = new NoisyAudioStreamReceiver();
+		keylistener = new RemoteControlReceiver();
 		intentFilter = new IntentFilter(
 				AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 	}
@@ -109,7 +113,7 @@ public class AudiomanagerModule extends KrollModule {
 	}
 
 	@Kroll.method
-	public void registerReceiver(KrollDict opts) {
+	public void registerRouteListener(KrollDict opts) {
 		if (opts.containsKeyAndNotNull("onAction")) {
 			// binding the local KrollFunc to javascript function
 			onActionCallback = (KrollFunction) opts.get("onAction");
@@ -119,8 +123,7 @@ public class AudiomanagerModule extends KrollModule {
 	}
 
 	@Kroll.method
-	public void unregisterReceiver(KrollDict opts) {
-		NoisyAudioStreamReceiver receiver = new NoisyAudioStreamReceiver();
+	public void unregisterRouteListener(KrollDict opts) {
 		context.unregisterReceiver(receiver);
 	}
 
@@ -167,6 +170,19 @@ public class AudiomanagerModule extends KrollModule {
 				dict.put("device", AUDIOROUTE_HEADSET);
 			}
 			onActionCallback.call(getKrollObject(), dict);
+		}
+	}
+
+	private class RemoteControlReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
+				KeyEvent event = (KeyEvent) intent
+						.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+				if (KeyEvent.KEYCODE_MEDIA_PLAY == event.getKeyCode()) {
+					// Handle key press.
+				}
+			}
 		}
 	}
 }

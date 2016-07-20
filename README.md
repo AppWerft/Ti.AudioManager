@@ -64,8 +64,17 @@ AudioManager.unregisterRouteListener();
 ```
 
 
-##headsetButtonListener()
-Most headset (with 4 contacts) has button(s). 
+##Use Hardware Playback Control Keys to Control Your App’s Audio Playback
+
+Media playback buttons such as play, pause, stop, skip, and previous are available on some handsets and many connected or wireless headsets. 
+To respond to media button clicks, you need to register a BroadcastReceiver in your manifest that listens for this action broadcast as shown below.
+```xml
+<receiver android:name=".RemoteControlReceiver">
+    <intent-filter>
+        <action android:name="android.intent.action.MEDIA_BUTTON" />
+    </intent-filter>
+</receiver>
+```
 
 ```javascript
 var AudioManager = request("ti.appwerft.audiomanager");

@@ -51,6 +51,21 @@ public class AudiomanagerModule extends KrollModule {
 	@Kroll.constant
 	public static final int AUDIOROUTE_LOUDSPEAKER = 2;
 
+	@Kroll.constant
+	public static final int KEYCODE_MEDIA_STOP = KeyEvent.KEYCODE_MEDIA_STOP;
+	@Kroll.constant
+	public static final int KEYCODE_MEDIA_PLAY_PAUSE = KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE;
+	@Kroll.constant
+	public static final int KEYCODE_HEADSETHOOK = KeyEvent.KEYCODE_HEADSETHOOK;
+	@Kroll.constant
+	public static final int KEYCODE_MEDIA_NEXT = KeyEvent.KEYCODE_MEDIA_NEXT;
+	@Kroll.constant
+	public static final int KEYCODE_MEDIA_PREVIOUS = KeyEvent.KEYCODE_MEDIA_PREVIOUS;
+	@Kroll.constant
+	public static final int KEYCODE_MEDIA_PAUSE = KeyEvent.KEYCODE_MEDIA_PAUSE;
+	@Kroll.constant
+	public static final int KEYCODE_MEDIA_PLAY = KeyEvent.KEYCODE_MEDIA_PLAY;
+
 	private AudioManager am;
 	private BroadcastReceiver receiver;
 	private RemoteControlReceiver keylistener;
@@ -128,6 +143,20 @@ public class AudiomanagerModule extends KrollModule {
 	}
 
 	@Kroll.method
+	public void registerregisterMediaButtonEventReceiver(KrollDict opts) {
+		if (opts.containsKeyAndNotNull("keypressed")) {
+			onKeyCallback = (KrollFunction) opts.get("keypressed");
+		}
+		context.registerReceiver(keylistener, intentFilter);
+
+	}
+
+	@Kroll.method
+	public void unregisterMediaButtonEventReceiver() {
+		context.unregisterReceiver(keylistener);
+	}
+
+	@Kroll.method
 	public int requestAudioFocus(KrollDict opts) {
 		int streamType = AudioManager.STREAM_MUSIC;
 		int focusType = AudioManager.AUDIOFOCUS_GAIN;
@@ -179,9 +208,9 @@ public class AudiomanagerModule extends KrollModule {
 			if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
 				KeyEvent event = (KeyEvent) intent
 						.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-				if (KeyEvent.KEYCODE_MEDIA_PLAY == event.getKeyCode()) {
-					// Handle key press.
-				}
+				KrollDict dict = new KrollDict();
+				dict.put("keycode", event.getKeyCode());
+				onKeyCallback.call(getKrollObject(), dict);
 			}
 		}
 	}

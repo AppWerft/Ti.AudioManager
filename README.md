@@ -63,7 +63,6 @@ AudioManager.registerRouteListener({
 AudioManager.unregisterRouteListener();
 ```
 
-
 ##Use Hardware Playback Control Keys to Control Your App’s Audio Playback
 
 Media playback buttons such as play, pause, stop, skip, and previous are available on some handsets and many connected or wireless headsets. 
@@ -77,17 +76,17 @@ To respond to media button clicks, you need to register a BroadcastReceiver in y
 ```
 
 ```javascript
+
+```javascript
 var AudioManager = request("ti.appwerft.audiomanager");
-AudioManager.registerButtonListener({
+AudioManager.registerMediaButtonEventReceiver({
     onAction: function(_e) {
         console.log(_e)
     }
 });
 //// later:
-AudioManager.unregisterButtonListener();
-
+AudioManager.unregisterMediaButtonEventReceiver();
 ```
-
 
 
 ##requestAudioFocus()

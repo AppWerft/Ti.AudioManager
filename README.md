@@ -1,4 +1,4 @@
-#Ti.Audiofocus
+#Ti.AudioManager
 
 This is a Titanium module for handling audio stuff on Android.
 
@@ -19,9 +19,39 @@ AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE;
 AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK;
 
 AUDIOFOCUS_REQUEST_GRANTED;
+
+AUDIOROUTE_BLUETOOTH
+AUDIOROUTE_LOUDSPEAKER
+AUDIOROUTE_HEADSET
+
+
 ```
 
 Details you will find in [Android documentation](https://developer.android.com/reference/android/media/AudioManager.html)
+
+
+##Dealing with Audio Output Hardware
+
+###Check What Hardware is Being Used
+How your app behaves might be affected by which hardware its output is being routed to.
+
+You can query the AudioManager to determine if the audio is currently being routed to the device speaker, wired headset, or attached Bluetooth device as shown in the following snippet:
+
+```javascript
+var AudioManager = request("ti.appwerft.audiomanager");
+switch (AudioManager.getAudioRoute()) {
+    case AudioManager.AUDIOROUTE_BLUETOOTH:
+    case AudioManager.AUDIOROUTE_LOUDSPEAKER:
+    case AudioManager.AUDIOROUTE_HEADSET :
+}
+```
+
+###Handle Changes in the Audio Output Hardware
+
+```javascript
+var AudioManager = request("ti.appwerft.audiofocus");
+
+
 
 
 ##requestAudioFocus()
@@ -30,8 +60,8 @@ With multiple apps potentially playing audio it's important to think about how t
 
 Before your app starts playing audio it should request—and receive—the audio focus. Likewise, it should know how to listen for a loss of audio focus and respond appropriately when that happens.
 
-```java
-var AudioManager = request("ti.appwerft.audiofocus");
+```javascript
+var AudioManager = request("ti.appwerft.audiomanager");
 AudioManager.requestAudioFocus({
     streamtype : AudioManager.STREAM_MUSIC,
     focusType : AudioManager.AUDIOFOCUS_GAIN);
@@ -44,8 +74,8 @@ AudioManager.requestAudioFocus({
 ##abandonAudioFocus()
 Once you've finished playback be sure to call abandonAudioFocus().
 
-```java
-var AudioManager = request("ti.appwerft.audiofocus");
+```javascript
+var AudioManager = request("ti.appwerft.audiomanager");
 AudioManager.abandonAudioFocus({
     onChanged : function(e) {
         console.log(e.state);

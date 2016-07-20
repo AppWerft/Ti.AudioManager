@@ -1,0 +1,18 @@
+#
+# this is your module manifest and used by Titanium
+# during compilation, packaging, distribution, etc.
+#
+version: 1.0.0
+apiversion: 2
+architectures: armeabi armeabi-v7a x86
+description: audiomanager
+author: Rainer Schleevoigt
+license: Specify your license
+copyright: Copyright (c) 2016 by 
+
+# these should not be edited
+name: audiomanager
+moduleid: de.appwerft.audiomanager
+guid: e2e08ac8-59e5-4b44-9ca0-25831c070207
+platform: android
+minsdk: 5.2.0.GA

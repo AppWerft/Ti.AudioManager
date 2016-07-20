@@ -23,6 +23,10 @@ AUDIOFOCUS_REQUEST_GRANTED;
 AUDIOROUTE_BLUETOOTH
 AUDIOROUTE_LOUDSPEAKER
 AUDIOROUTE_HEADSET
+AUDIOROUTE_HDMI
+AUDIOROUTE_CHROMECAST
+
+
 
 
 ```
@@ -42,7 +46,7 @@ var AudioManager = request("ti.appwerft.audiomanager");
 switch (AudioManager.getAudioRoute()) {
     case AudioManager.AUDIOROUTE_BLUETOOTH:
     case AudioManager.AUDIOROUTE_LOUDSPEAKER:
-    case AudioManager.AUDIOROUTE_HEADSET :
+    case AudioManager.AUDIOROUTE_HEADSET:
 }
 ```
 
@@ -50,13 +54,13 @@ switch (AudioManager.getAudioRoute()) {
 
 ```javascript
 var AudioManager = request("ti.appwerft.audiomanager");
-var Manager = AudioManager.createAudioDeviceManager();
-Manager.registerReceiver();
-Manager.addEventListener("audioaction",function(e) {
-    console.log(e.device);  // headset, hdmi, loudspeaker
-})
+AudioManager.registerReceiver({
+    onAction: function(_e) {
+        console.log(_e)
+    }
+});
 //// later:
-Manager.unregisterReceiver();
+AudioManager.unregisterReceiver();
 ```
 
 

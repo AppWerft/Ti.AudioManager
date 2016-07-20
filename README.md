@@ -50,11 +50,13 @@ switch (AudioManager.getAudioRoute()) {
 
 ```javascript
 var AudioManager = request("ti.appwerft.audiomanager");
-var listener = AudioManager.createAudioDeviceListener();
-listener.addEventListener("audioaction",function(e) {
+var Manager = AudioManager.createAudioDeviceManager();
+Manager.registerReceiver();
+Manager.addEventListener("audioaction",function(e) {
     console.log(e.device);  // headset, hdmi, loudspeaker
 })
-
+//// later:
+Manager.unregisterReceiver();
 ```
 
 

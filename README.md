@@ -54,14 +54,31 @@ switch (AudioManager.getAudioRoute()) {
 
 ```javascript
 var AudioManager = request("ti.appwerft.audiomanager");
-AudioManager.registerReceiver({
+AudioManager.registerRouteListener({
     onAction: function(_e) {
         console.log(_e)
     }
 });
 //// later:
-AudioManager.unregisterReceiver();
+AudioManager.unregisterRouteListener();
 ```
+
+
+##headsetButtonListener()
+Most headset (with 4 contacts) has button(s). 
+
+```javascript
+var AudioManager = request("ti.appwerft.audiomanager");
+AudioManager.registerButtonListener({
+    onAction: function(_e) {
+        console.log(_e)
+    }
+});
+//// later:
+AudioManager.unregisterButtonListener();
+
+```
+
 
 
 ##requestAudioFocus()

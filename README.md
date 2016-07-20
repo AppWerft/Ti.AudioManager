@@ -49,14 +49,18 @@ switch (AudioManager.getAudioRoute()) {
 ###Handle Changes in the Audio Output Hardware
 
 ```javascript
-var AudioManager = request("ti.appwerft.audiofocus");
+var AudioManager = request("ti.appwerft.audiomanager");
+var listener = AudioManager.createAudioDeviceListener();
+listener.addEventListener("audioaction",function(e) {
+    console.log(e.device);  // headset, hdmi, loudspeaker
+})
 
-
+```
 
 
 ##requestAudioFocus()
 
-With multiple apps potentially playing audio it's important to think about how they should interact. To avoid every music app playing at the same time, Android uses audio focus to moderate audio playback—only apps that hold the audio focus should play audio.
+With multiple apps potentially playing audio it is important to think about how they should interact. To avoid every music app playing at the same time, Android uses audio focus to moderate audio playback—only apps that hold the audio focus should play audio.
 
 Before your app starts playing audio it should request—and receive—the audio focus. Likewise, it should know how to listen for a loss of audio focus and respond appropriately when that happens.
 

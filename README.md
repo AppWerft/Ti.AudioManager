@@ -76,8 +76,6 @@ To respond to media button clicks, you need to register a BroadcastReceiver in y
 ```
 
 ```javascript
-
-```javascript
 var AudioManager = request("ti.appwerft.audiomanager");
 AudioManager.registerMediaButtonEventReceiver({
     onAction: function(_e) {

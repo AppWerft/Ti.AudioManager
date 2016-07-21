@@ -115,3 +115,7 @@ AudioManager.abandonAudioFocus({
     }
 })
 ```
+
+##getDevices()
+
+Get all details about all audio devices.

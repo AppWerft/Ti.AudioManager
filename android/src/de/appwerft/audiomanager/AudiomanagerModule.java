@@ -14,6 +14,7 @@ import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiApplication;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -86,26 +87,13 @@ public class AudiomanagerModule extends KrollModule {
 
 	@Kroll.onAppCreate
 	public void onAppCreate(TiApplication app) {
-		afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
-			public void onAudioFocusChange(int focusChange) {
-				KrollDict dict = new KrollDict();
-				switch (focusChange) {
-				case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-					dict.put("state", "paused");
-					break;
-				case AudioManager.AUDIOFOCUS_GAIN:
-					dict.put("state", "resumed");
-					break;
-				case AudioManager.AUDIOFOCUS_LOSS:
-					dict.put("state", "stopped");
-					break;
-				case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-					dict.put("state", "duck");
-					break;
-				}
-				onChangedCallback.call(getKrollObject(), dict);
-			}
-		};
+
+	}
+
+	public void onDestroy(Activity activity) {
+		context.unregisterReceiver(receiver);
+		context.unregisterReceiver(keylistener);
+		super.onDestroy(activity);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -143,7 +131,7 @@ public class AudiomanagerModule extends KrollModule {
 	}
 
 	@Kroll.method
-	public void registerregisterMediaButtonEventReceiver(KrollDict opts) {
+	public void registerMediaButtonEventReceiver(KrollDict opts) {
 		if (opts.containsKeyAndNotNull("keypressed")) {
 			onKeyCallback = (KrollFunction) opts.get("keypressed");
 		}
@@ -158,6 +146,27 @@ public class AudiomanagerModule extends KrollModule {
 
 	@Kroll.method
 	public int requestAudioFocus(KrollDict opts) {
+		afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+			public void onAudioFocusChange(int focusChange) {
+				KrollDict dict = new KrollDict();
+				switch (focusChange) {
+				case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+					dict.put("state", "paused");
+					break;
+				case AudioManager.AUDIOFOCUS_GAIN:
+					dict.put("state", "resumed");
+					break;
+				case AudioManager.AUDIOFOCUS_LOSS:
+					dict.put("state", "stopped");
+					break;
+				case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+					dict.put("state", "duck");
+					break;
+				}
+				if (onChangedCallback != null)
+					onChangedCallback.call(getKrollObject(), dict);
+			}
+		};
 		int streamType = AudioManager.STREAM_MUSIC;
 		int focusType = AudioManager.AUDIOFOCUS_GAIN;
 		if (opts != null) {

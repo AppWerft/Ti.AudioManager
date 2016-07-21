@@ -8,6 +8,8 @@
  */
 package de.appwerft.audiomanager;
 
+import java.util.ArrayList;
+
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.KrollModule;
@@ -19,6 +21,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioDeviceInfo;
+import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.view.KeyEvent;
 
@@ -87,7 +91,6 @@ public class AudiomanagerModule extends KrollModule {
 
 	@Kroll.onAppCreate
 	public void onAppCreate(TiApplication app) {
-
 	}
 
 	public void onDestroy(Activity activity) {
@@ -183,6 +186,120 @@ public class AudiomanagerModule extends KrollModule {
 		int result = am.requestAudioFocus(afChangeListener, streamType,
 				focusType);
 		return result;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Kroll.method
+	public KrollDict getDevices() {
+		AudioDeviceInfo[] devices = am.getDevices(AudioManager.GET_DEVICES_ALL);
+		KrollDict dict = new KrollDict();
+		ArrayList<KrollDict> listOfDevices = new ArrayList<KrollDict>();
+		for (AudioDeviceInfo device : devices) {
+
+			KrollDict deviceDict = new KrollDict();
+			deviceDict.put("productName", device.getProductName());
+			deviceDict.put("isSource", device.isSource());
+			deviceDict.put("isSink", device.isSink());
+			int[] sampleRates = device.getSampleRates();
+			deviceDict.put("sampleRates", sampleRates);
+			int[] channelMasks = device.getChannelMasks();
+			ArrayList<String> listofMasks = new ArrayList<String>();
+			for (int i = 0; i < channelMasks.length; i++) {
+				switch (channelMasks[i]) {
+				case AudioFormat.CHANNEL_CONFIGURATION_MONO:
+					listofMasks.add("mono");
+					break;
+				case AudioFormat.CHANNEL_CONFIGURATION_STEREO:
+					listofMasks.add("stereo");
+					break;
+				case AudioFormat.CHANNEL_IN_STEREO:
+					listofMasks.add("stereo");
+					break;
+				case AudioFormat.CHANNEL_OUT_7POINT1_SURROUND:
+					listofMasks.add("7.1_surround");
+					break;
+				case AudioFormat.CHANNEL_OUT_5POINT1:
+					listofMasks.add("5.1");
+					break;
+				case AudioFormat.CHANNEL_IN_BACK:
+					listofMasks.add("back");
+					break;
+				case AudioFormat.CHANNEL_IN_FRONT:
+					listofMasks.add("front");
+					break;
+				case AudioFormat.CHANNEL_IN_BACK_PROCESSED:
+					listofMasks.add("back:processed");
+					break;
+				default:
+					listofMasks.add("unknown");
+				}
+			}
+			deviceDict.put("channelMasks", listofMasks);
+			String type = "";
+			switch (device.getType()) {
+			case AudioDeviceInfo.TYPE_AUX_LINE:
+				type = "aux_line";
+				break;
+			case AudioDeviceInfo.TYPE_BLUETOOTH_A2DP:
+				type = "bluetooth_a2dp";
+				break;
+			case AudioDeviceInfo.TYPE_BLUETOOTH_SCO:
+				type = "bluetooth_sco";
+				break;
+			case AudioDeviceInfo.TYPE_BUILTIN_SPEAKER:
+				type = "builtin_speaker";
+				break;
+			case AudioDeviceInfo.TYPE_BUILTIN_EARPIECE:
+				type = "builtin_earpiece";
+				break;
+			case AudioDeviceInfo.TYPE_BUILTIN_MIC:
+				type = "builtin_mic";
+				break;
+			case AudioDeviceInfo.TYPE_DOCK:
+				type = "dock";
+				break;
+			case AudioDeviceInfo.TYPE_FM:
+				type = "fm";
+				break;
+			case AudioDeviceInfo.TYPE_HDMI:
+				type = "hdmi";
+				break;
+			case AudioDeviceInfo.TYPE_HDMI_ARC:
+				type = "hdmi_arc";
+				break;
+			case AudioDeviceInfo.TYPE_IP:
+				type = "ip";
+				break;
+			case AudioDeviceInfo.TYPE_LINE_ANALOG:
+				type = "line_analog";
+				break;
+			case AudioDeviceInfo.TYPE_LINE_DIGITAL:
+				type = "line_digital";
+				break;
+			case AudioDeviceInfo.TYPE_TELEPHONY:
+				type = "teleohony";
+				break;
+			case AudioDeviceInfo.TYPE_TV_TUNER:
+				type = "tv_tuner";
+				break;
+			case AudioDeviceInfo.TYPE_USB_ACCESSORY:
+				type = "usb_accessory";
+				break;
+			case AudioDeviceInfo.TYPE_USB_DEVICE:
+				type = "usb_device";
+				break;
+			case AudioDeviceInfo.TYPE_WIRED_HEADPHONES:
+				type = "rired_headphones";
+				break;
+			case AudioDeviceInfo.TYPE_WIRED_HEADSET:
+				type = "rired_headset";
+				break;
+			}
+			deviceDict.put("type", type);
+			listOfDevices.add(deviceDict);
+		}
+		dict.put("devices", listOfDevices);
+		return dict;
 	}
 
 	@Kroll.method
